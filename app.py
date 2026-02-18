@@ -160,9 +160,12 @@ with st.expander("*Quick Demo Guide for Judges**", expanded=True):
     1.  **Click [➕ Add Data]:** This simulates real-time hospital logs by generating new rows in the CSV.
     2.  **Click [🔄 Fetch Again]:** This triggers the data pipeline, refreshes the UI, and runs the **XGBoost AI models** on the new data.
     3.  **Observe Indicators:** Notice how the boxes turn <span style='color:#e74c3c; font-weight:bold;'>RED (Shortage)</span> or <span style='color:#f39c12; font-weight:bold;'>ORANGE (Expiry)</span> based on AI predictions.
-    4.  **Supply Route:** Click **🔍 Action** on any shortage group to see the Delhi-NCR supply optimization map.
+    4.  **Supply Route:** Click **🔍 Action** on any shortage group and then scroll to see the Delhi-NCR supply optimization map.
     5.  **Email Alerts:** From the map view, click **📧 Request Transfer** to simulate sending an email alert to partner hospitals.
-    6.  **Analytics:** Scroll down to see the AI performance charts and metrics.
+    6.  I added my own email now as partner hospital email for demo purpose. Therefore email comes to me only now. I added email screenshots below.
+    7.  **Analytics:** Scroll down to see the AI performance charts and metrics.
+    8.  **Github:** Check github repo for detailed documentation https://github.com/gaoharimran29-glitch/HomoSense-AI-Smart-Blood-Bank-
+    9. **Logout:** Click the logout button to end the session.
     """, unsafe_allow_html=True)
 
 # 3. GRID DASHBOARD
@@ -248,6 +251,7 @@ if st.session_state.modal_bg:
     pred = models[bg].predict(X)[0]
     is_shortage = current_units < pred
 
+    st.markdown("<div id='opti'></div>", unsafe_allow_html=True)
     st.subheader(f"🚚 Supply Route Optimization: {bg}")
 
     # HOME HUB COORDINATES
@@ -305,7 +309,7 @@ if st.session_state.modal_bg:
     hub_layer = pdk.Layer(
         "ScatterplotLayer",
         data=hub_df,
-        get_position=["Lon", "Lat"], # Pydeck takes [Longitude, Latitude]
+        get_position=["Lon", "Lat"],
         get_color="color",
         get_radius=300,
         pickable=True,
@@ -314,7 +318,7 @@ if st.session_state.modal_bg:
     hospital_layer = pdk.Layer(
         "ScatterplotLayer",
         data=nearby,
-        get_position=["Lon", "Lat"], # Correcting for your Lat/Lon order
+        get_position=["Lon", "Lat"],
         get_color="color",
         get_radius=200,
         pickable=True,
@@ -396,11 +400,37 @@ if st.session_state.modal_bg:
                             "message": msg,
                             "hospital": row["HospitalID"]
                         }
+                        
                         st.rerun()
 
     if st.button("✅ Close Optimization View"):
         st.session_state.modal_bg = None
         st.rerun()
+
+# --- Email demo screenshots ---
+st.markdown("---") # Visual separator
+
+# --- STATIC EMAIL PROOF SECTION ---
+st.header("📧 Email Alert Demonstration")
+st.write("Our AI system triggers real-time email notifications to hospitals and blood banks. Below is the confirmation of the automated alerts.")
+
+col1, col2 = st.columns(2)
+
+with col1:
+    st.info("**Stock offer to save blood wastage**")
+    try:
+        st.image(r"Screenshots/Stock Offer.jpeg", 
+                 caption="Alert received by hospital for stock offer.",width=400)
+    except:
+        st.warning("Sent email screenshot missing in 'screenshots/' folder.")
+
+with col2:
+    st.info("**Urgent Request due to Blood Shortage**")
+    try:
+        st.image(r"Screenshots/Urgent Blood Request.jpeg", 
+                 caption="Alert received by the hospital with shortage details.", width=400)
+    except:
+        st.warning("Received email screenshot missing in 'screenshots/' folder.")
 
 
 # ================= ANALYTICS =================
